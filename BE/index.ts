@@ -21,15 +21,16 @@ app.post('/api/register', async (req, res) => {
 });
 
 app.post('/api/reminder', async (req, res) => {
-    const { name, isPermanent, isFinish, DatePick, coloPick, desc } = req.body;
+    const { name, isPermanent, isFinish, datePick, colorPick, desc, user_id } = req.body;
 
     const { data, error } = await supabase.from('reminder').insert([{
-        name: name,
-        isPermanent: isPermanent,
-        isFinish: isFinish,
-        DatePick: DatePick,
-        coloPick: coloPick,
-        desc: desc
+      user_id: user_id,
+      name: name,
+      isPermanent: isPermanent,
+      isDone: isFinish,
+      datePick: datePick,
+      colorPick: colorPick,
+      desc: desc
     }]).select();
 
     if (error) return res.status(400).json({ error: error.message});
@@ -50,16 +51,17 @@ app.delete('/api/reminder/:id', async (req, res) => {
 
 app.put('/api/reminder/:id', async (req, res) => {
   const { id } = req.params;
-  const { name, isPermanent, isFinish, DatePick, coloPick, desc } = req.body;
+  const { name, isPermanent, isFinish, datePick, colorPick, desc, user_id } = req.body;
 
   const { data, error } = await supabase
   .from('reminder')
   .update({ 
+    user_id: user_id,
     name: name,
     isPermanent: isPermanent,
-    isFinish: isFinish,
-    DatePick: DatePick,
-    coloPick: coloPick,
+    isDone: isFinish,
+    datePick: datePick,
+    colorPick: colorPick,
     desc: desc
   })
   .eq('id', id);
