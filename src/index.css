@@ -2,9 +2,17 @@
 @import 'tailwindcss';
 
 @theme {
-    --font-jost: 'Jost', sans-serif
+    --font-jost: 'Jost', sans-serif;
     --color-primary-1: #FBF5DD;
     --color-primary-2: #E7E1B1;
     --color-primary-3: #306D29;
     --color-primary-4: #0D530E;
+
+    --text-md: 32px;
+    --radius-cust: 22px
+}
+
+/* Apply imported font to h1 elements */
+.jost {
+    font-family: var(--font-jost);
 }

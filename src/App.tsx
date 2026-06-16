@@ -1,11 +1,12 @@
 import { Route, Routes, BrowserRouter } from "react-router-dom"
-import MainPage from "./pages/landingPage"
+import HomePages from "./pages/HomePages"
+// import MainPage from "./pages/testing"
 
 export default function App() {
     return (
         <BrowserRouter>
             <Routes>
-                <Route path="/" element={<MainPage />} />
+                <Route path="/" element={<HomePages />} />
             </Routes>
         </BrowserRouter>
     )

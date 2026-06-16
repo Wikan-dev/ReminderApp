@@ -45,7 +45,7 @@ export default function TestRLS() {
   if (loading) return <p>Sedang memuat data dan mengecek RLS...</p>;
 
   return (
-    <div style={{ padding: '20px', fontFamily: 'sans-serif' }}>
+    <div className='bg-white' style={{ padding: '20px', fontFamily: 'sans-serif' }}>
       <h2>🧪 Hasil Pengujian RLS Frontend</h2>
       <p>Status Login: <strong>{userEmail ? `Login sebagai (${userEmail})` : 'Belum Login'}</strong></p>
       
