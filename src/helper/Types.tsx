@@ -6,11 +6,12 @@ export interface Reminder {
     color: string;
     desc: string;
 }
-
 export interface ButtonCustomProps {
     text: string;
     onClick?: () => void;
     className?: string;
+    type?: 'submit' | 'reset' | 'button';
+    disabled?: boolean;
 }
 
 export interface LogoButtonProps {
@@ -21,7 +22,10 @@ export interface LogoButtonProps {
 }
 
 export interface CustomInputProps {
-    type: string;
+    type: 'email' | 'password' | 'text';
     placeholder: string
     title: string;
+    value: string;
+    onChange: (val: string) => void;
+    disabled?: boolean;
 }
