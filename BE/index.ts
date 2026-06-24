@@ -1,31 +1,35 @@
 import express from 'express';
 import cors from 'cors';
 import { supabase } from '../src/config/supabase';
+import bcrypt from 'bcryptjs';
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
 // Endpoint Register
-//todo perbaiki endpoint register
 app.post('/api/register', async (req, res) => {
   const { name, email, password } = req.body;
-
-  // Langsung masukkan data ke tabel 'account' di Supabase tanpa lewat Prisma!
-  const { data, error } = await supabase
-    .from('account') 
-    .insert([{ 
-      Name: name, 
-      email: email, 
-      password: password 
-    }])
-    .select();
-
-  if (error) return res.status(400).json({ error: error.message });
-  return res.status(201).json({ message: 'Registrasi berhasil!', user: data });
-});
-//TODOS: perbaiki endpoint login
-//TODO: test kedua endpoint pada thunder client
+  try {
+      // Langsung masukkan data ke tabel 'account' di Supabase tanpa lewat Prisma!
+      const saltRounds = 10;
+      const hashedPassword = await bcrypt.hash(password, saltRounds)
+      const { data, error } = await supabase
+        .from('account') 
+        .insert([{ 
+          Name: name, 
+          email: email, 
+          password: hashedPassword 
+        }])
+        .select();
+    
+      if (error) return res.status(400).json({ error: error.message });
+      return res.status(201).json({ message: 'Registrasi berhasil!', user: data });
+    } catch (err) {
+      return res.status(500).json({ error: 'rterjadi kesalahan pada server' })
+    }
+  });
+  
 app.post('/api/login', async (req, res) => {
   const { email, password } = req.body;
   const { data: user, error } = await supabase
@@ -38,8 +42,9 @@ app.post('/api/login', async (req, res) => {
   if (error || !user) {
     return res.status(400).json({ error: "email tidak ditemukan"});
   } 
+  const isPasswordMatch = await bcrypt.compare(password, user.password);
   //jika password salah
-  if (user.password !== password) {
+  if (!isPasswordMatch) {
     return res.status(400).json({ error: "password yang di masukkan salah"});
   }
 
