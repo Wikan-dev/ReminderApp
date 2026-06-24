@@ -6,31 +6,34 @@ import { useState } from "react";
 import { useAuthStore } from "../store/authStore";
 import { useNavigate } from "react-router-dom";
 
-export default function LoginPage() {
+export default function SignUp() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const { loginUser, isLoading: loading, error} = useAuthStore();
+    const [name, setName] = useState('')
     const navigate = useNavigate();
+
+    const { registerUser, isLoading: loading, error} = useAuthStore();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        const isSucces = await loginUser(email, password);
+        const isSucces = await registerUser(email, password, name);
         if (isSucces) {
-            alert("login berhasil")
+            alert("akun berhasil di tambahkan")
         }
     }
 
     return (
         <div className="p-5 bg-primary-2 h-screen">
             {error ? <p className="text-red-500 text-center mb-4 font-jost text-lg font-semibold">{error}</p> :
-                <p className="text-primary-3 text-center mb-4 font-jost text-lg font-semibold">Login berhasil</p>
+                <p className="text-primary-3 text-center mb-4 font-jost text-lg font-semibold">akun berhasil di buat</p>
             }
             <h1 className="font-jost text-8xl text-center mb-10">Rmndr.</h1>
             <form className="flex flex-col gap-5 mb-10" onSubmit={handleSubmit}>
+                <CustomInputTemplate disabled={loading} value={name} onChange={setName} title="username" type="text" placeholder="username here" />
                 <CustomInputTemplate disabled={loading} value={email} onChange={setEmail} title="Email" type="email" placeholder="Email here" />
                 <CustomInputTemplate disabled={loading} value={password} onChange={setPassword} title="Password" type="text" placeholder="Password here" />
-                <ButtonCustom text={loading ? "Mohon tunggu" : "Login"} disabled={loading}  />
+                <ButtonCustom text={loading ? "Mohon tunggu" : "Sign Up"} disabled={loading}  />
             </form>
             <div className="flex flex-col gap-2">
                 <h1 className="font-jost text-md text-center cursor-default">or</h1>
@@ -39,7 +42,7 @@ export default function LoginPage() {
                     <h1 className="font-jost text-md">Login Using Google</h1>
                 </button>
             </div>
-            <h1 className="font-jost text-2xl mt-5 cursor-default" >Don't have any account? <span className="font-bold cursor-pointer" onClick={() => navigate('/SignUp')}>Register Now</span></h1>
+            <h1 className="font-jost text-2xl mt-5 cursor-default" >Already have an account? <span className="font-bold cursor-pointer" onClick={() => navigate('/Login')}>Sign In Now</span></h1>
         </div>
     )
 }

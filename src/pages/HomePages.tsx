@@ -1,5 +1,5 @@
 import arrow from "../assets/svg/line-end-arrow.svg"
-import { Navigate, useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 
 export default function HomePages() {
     const navigate = useNavigate();
