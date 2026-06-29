@@ -5,6 +5,7 @@ import { GoogleLogin } from "../function/googleLogin";
 import { useState } from "react";
 import { useAuthStore } from "../store/authStore";
 import { useNavigate } from "react-router-dom";
+import SuccesAnim from "../components/SuccesAnim";
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
@@ -26,6 +27,7 @@ export default function LoginPage() {
             {error ? <p className="text-red-500 text-center mb-4 font-jost text-lg font-semibold">{error}</p> :
                 <p className="text-primary-3 text-center mb-4 font-jost text-lg font-semibold">Login berhasil</p>
             }
+            {loading && <SuccesAnim />}
             <h1 className="font-jost text-8xl text-center mb-10">Rmndr.</h1>
             <form className="flex flex-col gap-5 mb-10" onSubmit={handleSubmit}>
                 <CustomInputTemplate disabled={loading} value={email} onChange={setEmail} title="Email" type="email" placeholder="Email here" />

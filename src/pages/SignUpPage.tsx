@@ -20,6 +20,7 @@ export default function SignUp() {
         const isSucces = await registerUser(email, password, name);
         if (isSucces) {
             alert("akun berhasil di tambahkan")
+            navigate('/Login')
         }
     }
 
