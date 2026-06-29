@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { supabase } from '../src/config/supabase';
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 
 const app = express();
 app.use(cors());
@@ -37,11 +38,13 @@ app.post('/api/login', async (req, res) => {
   .select('*') //mengambil seluruh tabel
   .eq('email', email) //mencocokkan kolom email dengan email yang di input
   .single(); //mengambil 1 objek saja bukan array
-
+  
   //jika error atau user tidak ditemukan
   if (error || !user) {
     return res.status(400).json({ error: "email tidak ditemukan"});
   } 
+  const rawString = `${user.email}-${user.name}-rmndr-secret`;
+  const urlSlug = crypto.createHash('md5').update(rawString).digest('hex').substring(0, 12);
   const isPasswordMatch = await bcrypt.compare(password, user.password);
   //jika password salah
   if (!isPasswordMatch) {
@@ -50,7 +53,12 @@ app.post('/api/login', async (req, res) => {
 
   return res.status(200).json({
     message: "login berhasil",
-    user: user
+    user: {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      slug: urlSlug
+    }
   })
   
 })

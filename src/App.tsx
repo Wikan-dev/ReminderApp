@@ -3,6 +3,7 @@ import HomePages from "./pages/HomePages"
 import LoginPage from "./pages/LoginPage"
 import SignUp from "./pages/SignUpPage"
 import MainPages from "./pages/MainPages"
+import SuccesPage from "./components/succesPage"
 // import MainPage from "./pages/testing"
 
 export default function App() {
@@ -12,7 +13,8 @@ export default function App() {
                 <Route path="/" element={<HomePages />} />
                 <Route path="/Login" element={<LoginPage />} />
                 <Route path="/SignUp" element={<SignUp />} />
-                <Route path="/MainPages:id" element={<MainPages />} />
+                <Route path="/MainPages/:id" element={<MainPages />} />
+                <Route path="/SuccesPage/:id" element={<SuccesPage />} />
             </Routes>
         </BrowserRouter>
     )

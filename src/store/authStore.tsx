@@ -1,9 +1,16 @@
 import { create } from "zustand";
 import axios from 'axios';
 
+interface UserType {
+    id: string,
+    name: string,
+    email: string,
+    slug: string
+}
+
 //tahap pertama ngedefine semua fungsi yang ada
 interface AuthState {
-    user: any | null;
+    user: UserType | null;
     isLoading: boolean;
     error: string | null
 
@@ -17,7 +24,6 @@ export const useAuthStore = create<AuthState>((set) => ({
     user: null,
     isLoading: false,
     error: null,
-    //todo perbaiki error kayak gini
     //-----action
     //register user
     registerUser: async (email, password, name) => {
