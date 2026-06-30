@@ -14,13 +14,16 @@ app.post('/api/register', async (req, res) => {
   try {
       // Langsung masukkan data ke tabel 'account' di Supabase tanpa lewat Prisma!
       const saltRounds = 10;
-      const hashedPassword = await bcrypt.hash(password, saltRounds)
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
+      const rawString = `${email}-${name}-rmndr-secret`;
+      const urlSlug = crypto.createHash('md5').update(rawString).digest('hex').substring(0, 12);
       const { data, error } = await supabase
         .from('account') 
         .insert([{ 
           Name: name, 
           email: email, 
-          password: hashedPassword 
+          password: hashedPassword,
+          slug: urlSlug
         }])
         .select();
     
@@ -43,63 +46,94 @@ app.post('/api/login', async (req, res) => {
   if (error || !user) {
     return res.status(400).json({ error: "email tidak ditemukan"});
   } 
-  const rawString = `${user.email}-${user.name}-rmndr-secret`;
-  const urlSlug = crypto.createHash('md5').update(rawString).digest('hex').substring(0, 12);
   const isPasswordMatch = await bcrypt.compare(password, user.password);
   //jika password salah
   if (!isPasswordMatch) {
     return res.status(400).json({ error: "password yang di masukkan salah"});
   }
 
+  const returnedSlug = user.slug ?? user.Slug ?? null;
+  const returnedName = user.name ?? user.Name ?? user.email;
+
   return res.status(200).json({
     message: "login berhasil",
     user: {
       id: user.id,
-      name: user.name,
+      name: returnedName,
       email: user.email,
-      slug: urlSlug
+      slug: returnedSlug
     }
   })
   
 })
 
+//menambahkan reminder baru
 app.post('/api/reminder', async (req, res) => {
-    const { name, isPermanent, isFinish, datePick, colorPick, desc, user_id } = req.body;
+  const { name, isPermanent, isFinish, datePick, colorPick, desc, slug } = req.body;
 
-    const { data, error } = await supabase.from('reminder').insert([{
-      user_id: user_id,
+  // Validasi data wajib agar tidak langsung crash ke database
+  if (!slug || !name) {
+    return res.status(400).json({ error: "Slug dan Name pengingat wajib diisi!" });
+  }
+
+  const { data, error } = await supabase
+    .from('reminder')
+    .insert([{
+      user_id: slug,
       name: name,
-      isPermanent: isPermanent,
-      isDone: isFinish,
+      isPermanent: isPermanent ?? false, // Beri default false jika kosong
+      isDone: isFinish ?? false,
       datePick: datePick,
       colorPick: colorPick,
       desc: desc
-    }]).select();
+    }])
+    .select();
 
-    if (error) return res.status(400).json({ error: error.message});
-    return res.status(200).json(data);
-})
+  if (error) return res.status(400).json({ error: error.message });
+  return res.status(201).json(data[0]); // Kembalikan single object yang baru dibuat
+});
 
-app.delete('/api/reminder/:id', async (req, res) => {
-  const { id } = req.params;
+//menghapus data reminder
+app.delete('/api/reminder/:slug', async (req, res) => {
+  const { slug } = req.params;
 
   const { error } = await supabase
     .from('reminder')
     .delete()
-    .eq('id', id);
+    .eq('user_id', slug);
     
     if (error) return res.status(400).json({ error: error.message });
     return res.status(200).json({ message: "reminder berhasil dihapus" })
 })
 
-app.put('/api/reminder/:id', async (req, res) => {
-  const { id } = req.params;
+//mengambil data reminder
+app.get('/api/reminder/:slug', async (req, res) => {
+  const { slug } = req.params; // Diubah dari req.body ke req.params
+
+  try {
+    const { data, error } = await supabase
+      .from('reminder')
+      .select('*')
+      .eq('user_id', slug);
+
+    if (error) return res.status(400).json({ error: error.message });
+    return res.status(200).json(data); // Pastikan ada return response!
+  } catch (err) {
+    return res.status(500).json({ error: 'Terjadi kesalahan pada server' });
+  }
+});
+
+//todo: buat kode front end untuk menggunakan endpoint ini
+//todo: gabungkan endpoint dengan slug pada param supaya bisa login dengan benar
+//mengedit reminder yang sudah ada
+app.put('/api/reminder/:slug', async (req, res) => {
+  const { slug } = req.params;
   const { name, isPermanent, isFinish, datePick, colorPick, desc, user_id } = req.body;
 
   const { data, error } = await supabase
   .from('reminder')
   .update({ 
-    user_id: user_id,
+    user_id: slug,
     name: name,
     isPermanent: isPermanent,
     isDone: isFinish,
@@ -107,12 +141,11 @@ app.put('/api/reminder/:id', async (req, res) => {
     colorPick: colorPick,
     desc: desc
   })
-  .eq('id', id);
+  .eq('user_id', slug);
 
   if (error) return res.status(400).json({ error: error.message});
   return res.status(200).json({ message: "reminder berhasil diupdate", data});
 })
-
 
 
 app.listen(5000, () => console.log('🚀 Server backend berjalan di port 5000'));
