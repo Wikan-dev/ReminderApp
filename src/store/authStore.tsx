@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import axios from 'axios';
+import { persist, createJSONStorage } from "zustand/middleware";
 
 interface UserType {
     id: string;
@@ -20,12 +21,14 @@ interface AuthState {
 // Ganti URL ini sesuai dengan BASE URL backend Express kamu
 const API_BASE_URL = "http://localhost:5000/api";
 
-export const useAuthStore = create<AuthState>((set) => ({
-    user: null,
-    isLoading: false,
-    error: null,
+export const useAuthStore = create<AuthState>()(
+    persist(
+        (set) => ({
+        user: null,
+        isLoading: false,
+        error: null,
 
-    registerUser: async (email, password, name) => {
+        registerUser: async (email, password, name) => {
         set({ isLoading: true, error: null });
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -101,7 +104,14 @@ export const useAuthStore = create<AuthState>((set) => ({
         }
     },
 
-    logoutUser: () => {
-        set({ user: null, error: null });
-    }
-}));1
+        logoutUser: () => {
+            set({ user: null, error: null });
+        }
+        }),
+        {
+            name: "auth-storage",
+            storage: createJSONStorage(() => localStorage),
+            partialize: (state) => ({ user: state.user }),
+        }
+    )
+);

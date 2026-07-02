@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 // 1. Import Auth Store kamu (sesuaikan path folder jika berbeda)
 import { useAuthStore } from '../store/authStore'; 
+import { useNavigate } from 'react-router-dom';
 
 interface Reminder {
 id: number;          
@@ -132,6 +133,13 @@ setInputName(reminder.name);
 setInputDatePick(reminder.datePick);
 };
 
+const navigate = useNavigate();
+
+const handleLogOut = () => {
+    useAuthStore.getState().logoutUser();
+    navigate('/Login');
+}
+
 return (
 <div style={{ padding: '20px', fontFamily: 'sans-serif', maxWidth: '500px', margin: '0 auto' }}>
     <h2>Test Endpoint Reminder</h2>
@@ -206,6 +214,7 @@ return (
         ))}
     </ul>
     )}
+    <button onClick={handleLogOut}>logout</button>
 </div>
 );
 };
