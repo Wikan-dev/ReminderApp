@@ -1,5 +1,5 @@
 import type { MainCardProps } from "../../helper/Types"
-import { motion } from "framer-motion"
+import { motion, AnimatePresence } from "framer-motion"
 import pen from "../../assets/svg/pen-linear.svg"
 import { useState } from "react"
 
@@ -30,15 +30,18 @@ export default function MainCard({ handleFinish, title, desc, datePick, status, 
                     className="text-black-custom cursor-pointer ml-auto" 
                     alt="edit" 
                 />
-                {edit && (
-                    <motion.div 
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="absolute max-w-20 right-0 top-10 bg-primary-1 border-3 text-center border-primary-2 rounded-xl hover:scale-110 hover:bg-primary-2 transition-all duration-300"
-                    >
-                        <h1 className="px-4 py-2 text-2xl">edit</h1>
-                    </motion.div>
-                )}
+                <AnimatePresence>
+                    {edit && (
+                        <motion.div 
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            className="absolute max-w-20 right-0 top-10 bg-primary-1 border-3 text-center border-primary-2 rounded-xl hover:scale-110 hover:bg-primary-2 transition-all duration-300"
+                        >
+                            <h1 className="px-4 py-2 text-2xl">edit</h1>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
         </div>
     )
