@@ -21,13 +21,23 @@ export default function MainCard({ handleFinish, title, desc, datePick, status, 
                 ) : (
                     <p>{datePick}</p>
                 )}
-                <img onClick={() => setEdit(!edit)} src={pen} className="text-black-custom cursor-pointer ml-auto" alt="edit" />
-                {edit ? (
-                    <div className="absolute max-w-20 right-0 top-10 bg-primary-1 border-3 text-center border-primary-2 rounded-xl hover:scale-110 hover:bg-primary-2 transition-all duration-300">
+                <img 
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        setEdit(!edit);
+                    }} 
+                    src={pen} 
+                    className="text-black-custom cursor-pointer ml-auto" 
+                    alt="edit" 
+                />
+                {edit && (
+                    <motion.div 
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="absolute max-w-20 right-0 top-10 bg-primary-1 border-3 text-center border-primary-2 rounded-xl hover:scale-110 hover:bg-primary-2 transition-all duration-300"
+                    >
                         <h1 className="px-4 py-2 text-2xl">edit</h1>
-                    </div>
-                ) : (
-                    <div></div>
+                    </motion.div>
                 )}
             </div>
         </div>
