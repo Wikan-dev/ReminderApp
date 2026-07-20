@@ -29,3 +29,12 @@ export interface CustomInputProps {
     onChange: (val: string) => void;
     disabled?: boolean;
 }
+
+export interface MainCardProps {
+    title: string;
+    desc: string;
+    datePick: string;
+    status: 'done' | 'pending';
+    Permanent?: boolean;
+    handleFinish?: () => void;
+}

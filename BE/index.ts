@@ -123,6 +123,21 @@ app.get('/api/reminder/:slug', async (req, res) => {
   }
 });
 
+// Toggle status selesai reminder
+app.patch('/api/reminder/:id', async (req, res) => {
+  const { id } = req.params;
+  const { isFinish } = req.body;
+
+  const { data, error } = await supabase
+    .from('reminder')
+    .update({ isDone: Boolean(isFinish) })
+    .eq('id', id)
+    .select();
+
+  if (error) return res.status(400).json({ error: error.message });
+  return res.status(200).json(data?.[0]);
+});
+
 //todo: buat kode front end untuk menggunakan endpoint ini
 //todo: gabungkan endpoint dengan slug pada param supaya bisa login dengan benar
 //mengedit reminder yang sudah ada

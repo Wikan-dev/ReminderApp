@@ -5,14 +5,14 @@ import { useAuthStore } from '../store/authStore';
 import { useNavigate } from 'react-router-dom';
 
 interface Reminder {
-id: number;          
-user_id: string; 
-name: string;        
-datePick: string;    
-isPermanent: boolean;
-isDone: boolean;
-colorPick?: string;
-desc?: string;
+    id: number;          
+    user_id: string; 
+    name: string;        
+    datePick: string;    
+    isPermanent: boolean;
+    isDone: boolean;
+    colorPick?: string;
+    desc?: string;
 }
 
 const BASE_URL = 'http://localhost:5000/api/reminder';

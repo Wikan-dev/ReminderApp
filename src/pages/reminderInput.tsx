@@ -1,4 +1,6 @@
 export default function NewReminder() {
+    //todo: selesain halaman nambahin reminder baru
+    //todo ambil fungsi dari function addnewReminder 
     return (
         <div>
             <div>

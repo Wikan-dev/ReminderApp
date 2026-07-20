@@ -3,11 +3,12 @@ import axios from "axios";
 
 // SECTION 1: Define Types / Interface (Disamakan dengan kolom backend & Supabase)
 export interface Reminder {
-    id?: number;
-    user_id: string;   // Ini untuk menyimpan slug
+    id?: number | string;
+    user_id?: string;   // Ini untuk menyimpan slug
     name: string;      // Menggantikan activity
     isPermanent: boolean;
-    isDone: boolean;   // Sinkron dengan 'isFinish' / 'isDone' di backend
+    isDone?: boolean;   // Sinkron dengan 'isFinish' / 'isDone' di backend
+    isFinish?: boolean;
     datePick: string;  // Menggantikan reminder_time
     colorPick?: string;
     desc?: string;
@@ -27,6 +28,8 @@ interface ReminderState {
         colorPick?: string;
         desc?: string;
     }) => Promise<void>;
+    handleFinishReminder: (id: number | string | undefined, isFinish: boolean) => Promise<void>;
+    toggleFinishReminder: (item: Reminder) => Promise<void>
 }
 
 // SECTION 2: Create Store
@@ -34,6 +37,39 @@ export const useReminderStore = create<ReminderState>((set, get) => ({
     reminders: [],
     isLoading: false,
     error: null,
+    isFinish: false,
+
+    handleFinishReminder: async (id, isFinish) => {
+        if (!id) return;
+        set({ isLoading: true, error: null });
+        try {
+            const response = await axios.patch(`http://localhost:5000/api/reminder/${id}`, { isFinish });
+            const updatedReminder = response.data;
+
+            // Update state dengan reminder yang sudah diubah
+            set({
+                reminders: get().reminders.map((reminder) =>
+                    String(reminder.id) === String(updatedReminder.id) ? updatedReminder : reminder
+                ),
+                isLoading: false
+            });
+        } catch (err: any) {
+            console.error("❌ UPDATE ERROR:", err);
+            set({ error: err.response?.data?.error || "Gagal memperbarui status reminder", isLoading: false });
+        }
+    },
+
+    toggleFinishReminder: async (item: Reminder) => {
+        if (!item.id) return;
+        const nextValue = !(item.isFinish ?? item.isDone ?? false);
+        set((state) => ({
+            reminders: state.reminders.map((reminder) => 
+                String(reminder.id) === String(item.id) ? {...reminder, isFinish: nextValue, isDone: nextValue } : reminder )
+        }))
+
+
+        await get().handleFinishReminder(item.id, nextValue);
+    },
 
     // Diubah agar menerima argumen slug dan dimasukkan ke URL parameter
     fetchReminder: async (slug: string) => {

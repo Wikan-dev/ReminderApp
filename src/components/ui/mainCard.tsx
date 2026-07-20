@@ -16,18 +16,20 @@ export default function MainCard({ handleFinish, title, desc, datePick, status, 
                 <p>{status}</p>
             </div>
             <div className="flex flex-row justify-between relative">
-                {Permanent ? (
-                    <p>Due Today</p>
-                ) : (
-                    <p>{datePick}</p>
-                )}
+                <div className="mt-auto">
+                    {Permanent ? (
+                        <p>Due Today</p>
+                    ) : (
+                        <p>{datePick}</p>
+                    )}
+                </div>
                 <img 
                     onClick={(e) => {
                         e.stopPropagation();
                         setEdit(!edit);
                     }} 
                     src={pen} 
-                    className="text-black-custom cursor-pointer ml-auto" 
+                    className="w-10 text-black-custom cursor-pointer ml-auto" 
                     alt="edit" 
                 />
                 <AnimatePresence>
@@ -36,8 +38,7 @@ export default function MainCard({ handleFinish, title, desc, datePick, status, 
                             initial={{ opacity: 0, y: -10 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -10 }}
-                            className="absolute max-w-20 right-0 top-10 bg-primary-1 border-3 text-center border-primary-2 rounded-xl hover:scale-110 hover:bg-primary-2 transition-all duration-300"
-                        >
+                            className="absolute max-w-20 right-0 top-15 bg-primary-1 border-3 text-center border-primary-2 rounded-xl ">
                             <h1 className="px-4 py-2 text-2xl">edit</h1>
                         </motion.div>
                     )}
