@@ -4,6 +4,7 @@ import LoginPage from "./pages/LoginPage"
 import SignUp from "./pages/SignUpPage"
 import MainPages from "./pages/MainPages"
 import SuccesPage from "./components/succesPage"
+import NewReminder from "./pages/reminderInput"
 // import MainPage from "./pages/testing"
 
 export default function App() {
@@ -15,6 +16,7 @@ export default function App() {
                 <Route path="/SignUp" element={<SignUp />} />
                 <Route path="/MainPages/:id" element={<MainPages />} />
                 <Route path="/SuccesPage/:id" element={<SuccesPage />} />
+                <Route path="/NewReminder/:id" element={<NewReminder />} />
             </Routes>
         </BrowserRouter>
     )

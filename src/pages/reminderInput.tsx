@@ -61,6 +61,10 @@ export default function NewReminder() {
         };
     }, [isDragging]);
 
+    const handleKonfirmasi = () => {
+        console.log(hours, minutes, date);
+    }
+
     return (
         <div className="bg-primary-1 h-screen p-5">
             <div className="">
@@ -111,6 +115,7 @@ export default function NewReminder() {
                         </div>
                     </div>
                 </form>
+                    <button onClick={handleKonfirmasi} className="bg-green-400 text-black cursor-pointer">konfirmasi</button>
             </div>
         </div>
     )
