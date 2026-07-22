@@ -3,30 +3,14 @@ import { useState, useRef, MouseEvent, TouchEvent } from "react"
 export default function NewReminder() {
     const [name, setName] = useState<string>("");
     const [date, setDate] = useState<string>("");
-    const [time, setTime] = useState<string>("12:00");
+    const [hours, setHours] = useState<number>(12);
+    const [minutes, setMinutes] = useState<number>(0);
     
-    const [isDragging, setIsDragging] = useState(false);
+    const [isDragging, setIsDragging] = useState<string | null>(null); // 'hours' | 'minutes' | null
     const lastY = useRef<number>(0);
 
-    // Helper to adjust time string
-    const adjustTime = (delta: number) => {
-        const [hours, minutes] = time.split(':').map(Number);
-        let totalMinutes = hours * 60 + minutes;
-        
-        // Adjust by delta (delta is 1 or -1)
-        totalMinutes += delta;
-
-        // Handle wrap around (24 hours = 1440 minutes)
-        if (totalMinutes < 0) totalMinutes = 1439;
-        if (totalMinutes >= 1440) totalMinutes = 0;
-
-        const newHours = Math.floor(totalMinutes / 60).toString().padStart(2, '0');
-        const newMinutes = (totalMinutes % 60).toString().padStart(2, '0');
-        setTime(`${newHours}:${newMinutes}`);
-    };
-
-    const handleStart = (y: number) => {
-        setIsDragging(true);
+    const handleStart = (y: number, type: 'hours' | 'minutes') => {
+        setIsDragging(type);
         lastY.current = y;
     };
 
@@ -36,13 +20,23 @@ export default function NewReminder() {
         const diff = lastY.current - y;
         // Threshold to prevent jittery changes
         if (Math.abs(diff) > 10) {
-            adjustTime(diff > 0 ? 1 : -1);
+            if (isDragging === 'hours') {
+                let newHours = hours + (diff > 0 ? 1 : -1);
+                if (newHours < 0) newHours = 23;
+                if (newHours > 23) newHours = 0;
+                setHours(newHours);
+            } else {
+                let newMinutes = minutes + (diff > 0 ? 1 : -1);
+                if (newMinutes < 0) newMinutes = 59;
+                if (newMinutes > 59) newMinutes = 0;
+                setMinutes(newMinutes);
+            }
             lastY.current = y;
         }
     };
 
     const handleEnd = () => {
-        setIsDragging(false);
+        setIsDragging(null);
     };
 
     return (
@@ -69,18 +63,39 @@ export default function NewReminder() {
                         />
                     </div>
                     <div>
-                        <h1 className="font-bold">Time (Drag up/down to change)</h1>
-                        <div 
-                            className="border p-4 rounded w-full bg-white text-center cursor-ns-resize select-none font-mono text-xl"
-                            onMouseDown={(e: MouseEvent) => handleStart(e.clientY)}
-                            onMouseMove={(e: MouseEvent) => handleMove(e.clientY)}
-                            onMouseUp={handleEnd}
-                            onMouseLeave={handleEnd}
-                            onTouchStart={(e: TouchEvent) => handleStart(e.touches[0].clientY)}
-                            onTouchMove={(e: TouchEvent) => handleMove(e.touches[0].clientY)}
-                            onTouchEnd={handleEnd}
-                        >
-                            {time}
+                        <h1 className="font-bold mb-2">Time (Drag up/down to change)</h1>
+                        <div className="flex gap-4 items-center justify-center">
+                            {/* Hours Picker */}
+                            <div 
+                                className="flex-1 border p-6 rounded-lg bg-white text-center cursor-ns-resize select-none font-mono text-3xl shadow-sm active:bg-gray-50"
+                                onMouseDown={(e: MouseEvent) => handleStart(e.clientY, 'hours')}
+                                onMouseMove={(e: MouseEvent) => handleMove(e.clientY)}
+                                onMouseUp={handleEnd}
+                                onMouseLeave={handleEnd}
+                                onTouchStart={(e: TouchEvent) => handleStart(e.touches[0].clientY, 'hours')}
+                                onTouchMove={(e: TouchEvent) => handleMove(e.touches[0].clientY)}
+                                onTouchEnd={handleEnd}
+                            >
+                                {hours.toString().padStart(2, '0')}
+                                <span className="block text-xs text-gray-400 uppercase">Hours</span>
+                            </div>
+
+                            <span className="text-2xl font-bold">:</span>
+
+                            {/* Minutes Picker */}
+                            <div 
+                                className="flex-1 border p-6 rounded-lg bg-white text-center cursor-ns-resize select-none font-mono text-3xl shadow-sm active:bg-gray-50"
+                                onMouseDown={(e: MouseEvent) => handleStart(e.clientY, 'minutes')}
+                                onMouseMove={(e: MouseEvent) => handleMove(e.clientY)}
+                                onMouseUp={handleEnd}
+                                onMouseLeave={handleEnd}
+                                onTouchStart={(e: TouchEvent) => handleStart(e.touches[0].clientY, 'minutes')}
+                                onTouchMove={(e: TouchEvent) => handleMove(e.touches[0].clientY)}
+                                onTouchEnd={handleEnd}
+                            >
+                                {minutes.toString().padStart(2, '0')}
+                                <span className="block text-xs text-gray-400 uppercase">Minutes</span>
+                            </div>
                         </div>
                     </div>
                 </form>
