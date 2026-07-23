@@ -5,14 +5,19 @@ export default function NewReminder() {
     const [date, setDate] = useState<string>("");
     const [hours, setHours] = useState<number>(12);
     const [minutes, setMinutes] = useState<number>(0);
+    const [dragOffset, setDragOffset] = useState<number>(0);
+
     
     const [isDragging, setIsDragging] = useState<string | null>(null); // 'hours' | 'minutes' | null
     const lastY = useRef<number>(0);
-
+    
     const handleStart = (y: number, type: 'hours' | 'minutes') => {
         setIsDragging(type);
         lastY.current = y;
+        setDragOffset(0);
     };
+
+    const step =  40;
 
     useEffect(() => {
         const handleMove = (e: MouseEvent | TouchEvent) => {
@@ -20,6 +25,8 @@ export default function NewReminder() {
             
             const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
             const diff = lastY.current - clientY;
+
+            setDragOffset(diff);
             
             // Threshold to prevent jittery changes
             if (Math.abs(diff) > 10) {
@@ -40,11 +47,13 @@ export default function NewReminder() {
                     });
                 }
                 lastY.current = clientY;
+                setDragOffset(0);
             }
         };
 
         const handleEnd = () => {
             setIsDragging(null);
+            setDragOffset(0);
         };
 
         if (isDragging) {
@@ -118,10 +127,15 @@ export default function NewReminder() {
                                 onMouseDown={(e) => handleStart(e.clientY, 'hours')}
                                 onTouchStart={(e) => handleStart(e.touches[0].clientY, 'hours')}
                             >
-                                <div className="text-gray-300 text-xl opacity-50">{hourDisplay.prev.toString().padStart(2, '0')}</div>
+                            <span className="block text-xs text-gray-400 uppercase mb-2">Hours</span>
+                            <div style={{
+                                        transform: `translateY(${isDragging === 'hours' ? -dragOffset : 0}px)`,
+                                        transition: isDragging === 'hours' ? 'none' : 'transform 150ms ease-out',
+                                    }}>
+                                <div className="text-gray-300 text-xl">{hourDisplay.prev.toString().padStart(2, '0')}</div>
                                 <div className="font-bold text-4xl">{hours.toString().padStart(2, '0')}</div>
-                                <div className="text-gray-300 text-xl opacity-50">{hourDisplay.next.toString().padStart(2, '0')}</div>
-                                <span className="block text-xs text-gray-400 uppercase mt-2">Hours</span>
+                                <div className="text-gray-300 text-xl">{hourDisplay.next.toString().padStart(2, '0')}</div>
+                            </div>
                             </div>
 
                             <span className="text-2xl font-bold">:</span>
@@ -132,10 +146,15 @@ export default function NewReminder() {
                                 onMouseDown={(e) => handleStart(e.clientY, 'minutes')}
                                 onTouchStart={(e) => handleStart(e.touches[0].clientY, 'minutes')}
                             >
-                                <div className="text-gray-300 text-xl opacity-50">{minuteDisplay.prev.toString().padStart(2, '0')}</div>
+                                <span className="block text-xs text-gray-400 uppercase mb-2">Minutes</span>
+                            <div style={{
+                                    transform: `translateY(${isDragging === 'minutes' ? -dragOffset : 0}px)`,
+                                    transition: isDragging === 'minutes' ? 'none' : 'transform 150ms ease-out',
+                                }}>
+                                <div className="text-gray-300 text-xl ">{minuteDisplay.prev.toString().padStart(2, '0')}</div>
                                 <div className="font-bold text-4xl">{minutes.toString().padStart(2, '0')}</div>
-                                <div className="text-gray-300 text-xl opacity-50">{minuteDisplay.next.toString().padStart(2, '0')}</div>
-                                <span className="block text-xs text-gray-400 uppercase mt-2">Minutes</span>
+                                <div className="text-gray-300 text-xl ">{minuteDisplay.next.toString().padStart(2, '0')}</div>
+                            </div>
                             </div>
                         </div>
                     </div>
