@@ -26,8 +26,9 @@ export default function NewReminder() {
                 if (isDragging === 'hours') {
                     setHours(prev => {
                         let newHours = prev + (diff > 0 ? 1 : -1);
-                        if (newHours < 0) return 23;
-                        if (newHours > 23) return 0;
+                        // Wrap logic: 1-23, skipping 0
+                        if (newHours > 23) return 1;
+                        if (newHours < 1) return 23;
                         return newHours;
                     });
                 } else {
@@ -65,6 +66,26 @@ export default function NewReminder() {
         console.log(hours, minutes, date);
     }
 
+    // Helper to get previous and next values
+    const getPrevNext = (current: number, max: number, min: number = 0) => {
+        let prev = current - 1;
+        let next = current + 1;
+
+        if (prev < min) prev = max;
+        if (next > max) next = min;
+
+        // Special handling for hours to skip 0
+        if (max === 23 && min === 1) {
+            if (prev < 1) prev = 23;
+            if (next > 23) next = 1;
+        }
+
+        return { prev, next };
+    };
+
+    const hourDisplay = getPrevNext(hours, 23, 1);
+    const minuteDisplay = getPrevNext(minutes, 59, 0);
+
     return (
         <div className="bg-primary-1 h-screen p-5">
             <div className="">
@@ -93,29 +114,33 @@ export default function NewReminder() {
                         <div className="flex gap-4 items-center justify-center">
                             {/* Hours Picker */}
                             <div 
-                                className="flex-1 border p-6 rounded-lg bg-white text-center cursor-ns-resize select-none font-mono text-3xl shadow-sm active:bg-gray-50"
+                                className="flex-1 border p-6 rounded-lg bg-white text-center cursor-ns-resize select-none font-mono text-3xl shadow-sm active:bg-gray-50 overflow-hidden relative"
                                 onMouseDown={(e) => handleStart(e.clientY, 'hours')}
                                 onTouchStart={(e) => handleStart(e.touches[0].clientY, 'hours')}
                             >
-                                {hours.toString().padStart(2, '0')}
-                                <span className="block text-xs text-gray-400 uppercase">Hours</span>
+                                <div className="text-gray-300 text-xl opacity-50">{hourDisplay.prev.toString().padStart(2, '0')}</div>
+                                <div className="font-bold text-4xl">{hours.toString().padStart(2, '0')}</div>
+                                <div className="text-gray-300 text-xl opacity-50">{hourDisplay.next.toString().padStart(2, '0')}</div>
+                                <span className="block text-xs text-gray-400 uppercase mt-2">Hours</span>
                             </div>
 
                             <span className="text-2xl font-bold">:</span>
 
                             {/* Minutes Picker */}
                             <div 
-                                className="flex-1 border p-6 rounded-lg bg-white text-center cursor-ns-resize select-none font-mono text-3xl shadow-sm active:bg-gray-50"
+                                className="flex-1 border p-6 rounded-lg bg-white text-center cursor-ns-resize select-none font-mono text-3xl shadow-sm active:bg-gray-50 overflow-hidden relative"
                                 onMouseDown={(e) => handleStart(e.clientY, 'minutes')}
                                 onTouchStart={(e) => handleStart(e.touches[0].clientY, 'minutes')}
                             >
-                                {minutes.toString().padStart(2, '0')}
-                                <span className="block text-xs text-gray-400 uppercase">Minutes</span>
+                                <div className="text-gray-300 text-xl opacity-50">{minuteDisplay.prev.toString().padStart(2, '0')}</div>
+                                <div className="font-bold text-4xl">{minutes.toString().padStart(2, '0')}</div>
+                                <div className="text-gray-300 text-xl opacity-50">{minuteDisplay.next.toString().padStart(2, '0')}</div>
+                                <span className="block text-xs text-gray-400 uppercase mt-2">Minutes</span>
                             </div>
                         </div>
                     </div>
                 </form>
-                    <button onClick={handleKonfirmasi} className="bg-green-400 text-black cursor-pointer">konfirmasi</button>
+                    <button onClick={handleKonfirmasi} className="bg-green-400 text-black cursor-pointer mt-4 p-2 rounded">konfirmasi</button>
             </div>
         </div>
     )
