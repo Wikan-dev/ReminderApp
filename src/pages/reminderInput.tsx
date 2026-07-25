@@ -125,7 +125,7 @@ export default function NewReminder() {
         const datePickFormatted = `${date}T${formattedHours}:${formattedMinutes}:00`;
 
         try {
-            if (editData?.id) {
+            if (editData && (editData.id !== undefined && editData.id !== null)) {
                 await updateReminder(editData.id, {
                     name,
                     datePick: datePickFormatted,

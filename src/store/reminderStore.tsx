@@ -56,7 +56,7 @@ export const useReminderStore = create<ReminderState>((set, get) => ({
             // Update state dengan reminder yang sudah diubah
             set({
                 reminders: get().reminders.map((reminder) =>
-                    String(reminder.id) === String(updatedReminder.id) ? updatedReminder : reminder
+                    String(reminder.id) === String(id) ? { ...reminder, ...updatedReminder, isFinish, isDone: isFinish } : reminder
                 ),
                 isLoading: false
             });
@@ -73,7 +73,6 @@ export const useReminderStore = create<ReminderState>((set, get) => ({
             reminders: state.reminders.map((reminder) => 
                 String(reminder.id) === String(item.id) ? {...reminder, isFinish: nextValue, isDone: nextValue } : reminder )
         }))
-
 
         await get().handleFinishReminder(item.id, nextValue);
     },
@@ -122,7 +121,15 @@ export const useReminderStore = create<ReminderState>((set, get) => ({
 
             set({
                 reminders: get().reminders.map((reminder) =>
-                    String(reminder.id) === String(id) ? { ...reminder, ...updated } : reminder
+                    String(reminder.id) === String(id)
+                        ? {
+                              ...reminder,
+                              ...updated,
+                              name: reminderData.name,
+                              datePick: reminderData.datePick,
+                              colorPick: reminderData.colorPick ?? reminder.colorPick
+                          }
+                        : reminder
                 ),
                 isLoading: false
             });
