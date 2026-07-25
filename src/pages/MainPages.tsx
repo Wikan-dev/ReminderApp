@@ -24,10 +24,9 @@ export default function MainPages() {
                             exit={{ opacity: 0, y: 15, scale: 0.95 }}
                             transition={{ duration: 0.2, ease: "easeOut" }}
                             onClick={() => navigate(`/NewReminder/${id}`)}
-                            className="bg-primary-3 mb-3 p-3 px-5 rounded-2xl flex flex-row items-center gap-3 shadow-lg cursor-pointer hover:opacity-90"
-                        >
+                            className="bg-primary-3 mb-3 p-3 px-5 rounded-2xl flex flex-row items-center gap-3 shadow-lg cursor-pointer hover:opacity-90">
                             <img src={notes} alt="notes" className="w-6 h-6" />
-                            <h1 className="text-white text-lg font-jost whitespace-nowrap">
+                            <h1 className="text-white text-2xl font-jost whitespace-nowrap">
                                 add reminder
                             </h1>
                         </motion.div>
