@@ -1,15 +1,21 @@
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { COLLOR_PALLETE } from "../components/contents/color";
 import { useReminderStore } from "../store/reminderStore";
 
 export default function NewReminder() {
+    const { id: slug } = useParams<{ id: string }>();
+    const navigate = useNavigate();
+
     const [name, setName] = useState<string>("");
     const [date, setDate] = useState<string>("");
     const [hours, setHours] = useState<number>(12);
     const [minutes, setMinutes] = useState<number>(0);
     const [dragOffset, setDragOffset] = useState<number>(0);
+    const [colorPick, setColorPick] = useState<string>(COLLOR_PALLETE[0]?.hex || "#ffffff");
 
-    const {addReminder: (reminderData)} = useReminderStore
+    const addReminder = useReminderStore((state) => state.addReminder);
+    const isLoading = useReminderStore((state) => state.isLoading);
 
     const [isDragging, setIsDragging] = useState<string | null>(null); // 'hours' | 'minutes' | null
     const lastY = useRef<number>(0);
@@ -75,9 +81,32 @@ export default function NewReminder() {
         };
     }, [isDragging]);
 
-    const handleKonfirmasi = () => {
-        console.log(hours, minutes, date);
-    }
+    const handleKonfirmasi = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!slug || !name || !date) {
+            alert("Harap isi nama dan tanggal reminder");
+            return;
+        }
+
+        const formattedHours = hours.toString().padStart(2, '0');
+        const formattedMinutes = minutes.toString().padStart(2, '0');
+        const datePickFormatted = `${date}T${formattedHours}:${formattedMinutes}:00`;
+
+        try {
+            await addReminder({
+                slug,
+                name,
+                datePick: datePickFormatted,
+                colorPick,
+                isPermanent: false,
+                isFinish: false,
+            });
+
+            navigate(`/MainPages/${slug}`);
+        } catch (error) {
+            console.error("Gagal menambah reminder:", error);
+        }
+    };
 
     // Helper to get previous and next values
     const getPrevNext = (current: number, max: number, min: number = 0) => {
@@ -102,7 +131,7 @@ export default function NewReminder() {
     return (
         <div className="bg-primary-1 h-screen p-5">
             <div className="">
-                <form className="flex flex-col gap-4">
+                <form className="flex flex-col gap-4" onSubmit={handleKonfirmasi}>
                     {/* date and time picker */}
                     <div>
                         <h1 className="font-bold">Reminder Name</h1>
@@ -112,6 +141,7 @@ export default function NewReminder() {
                             onChange={(e) => setName(e.target.value)}
                             className="border p-2 rounded w-full"
                             placeholder="Enter reminder name"
+                            required
                         />
                     </div>
                     <div>
@@ -121,6 +151,7 @@ export default function NewReminder() {
                             value={date} 
                             onChange={(e) => setDate(e.target.value)}
                             className="border p-2 rounded w-full"
+                            required
                         />
                     </div>
                     <div>
@@ -167,13 +198,25 @@ export default function NewReminder() {
                     {/* color picker */}
                     <div className="flex flex-row gap-5">
                         {COLLOR_PALLETE.map((item, i) => (
-                            <div className={"h-10 w-10 rounded-full hover:border-2 hover:opacity-75 border-white"} style={{ backgroundColor: item.hex}} key={i}>
-
-                            </div>
+                            <div 
+                                key={i}
+                                onClick={() => setColorPick(item.hex)}
+                                className={`h-10 w-10 rounded-full cursor-pointer border-2 hover:opacity-75 ${
+                                    colorPick === item.hex ? "border-black scale-110" : "border-white"
+                                }`} 
+                                style={{ backgroundColor: item.hex }}
+                            />
                         ))}
                     </div>
+
+                    <button 
+                        type="submit" 
+                        disabled={isLoading}
+                        className="bg-green-400 text-black cursor-pointer mt-4 p-2 rounded disabled:opacity-50"
+                    >
+                        {isLoading ? "Menyimpan..." : "konfirmasi"}
+                    </button>
                 </form>
-                    <button onClick={handleKonfirmasi} className="bg-green-400 text-black cursor-pointer mt-4 p-2 rounded">konfirmasi</button>
             </div>
         </div>
     )
