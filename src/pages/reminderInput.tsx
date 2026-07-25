@@ -1,4 +1,6 @@
 import { useState, useRef, useEffect } from "react"
+import { COLLOR_PALLETE } from "../components/contents/color";
+import { useReminderStore } from "../store/reminderStore";
 
 export default function NewReminder() {
     const [name, setName] = useState<string>("");
@@ -7,7 +9,8 @@ export default function NewReminder() {
     const [minutes, setMinutes] = useState<number>(0);
     const [dragOffset, setDragOffset] = useState<number>(0);
 
-    
+    const {addReminder: (reminderData)} = useReminderStore
+
     const [isDragging, setIsDragging] = useState<string | null>(null); // 'hours' | 'minutes' | null
     const lastY = useRef<number>(0);
     
@@ -17,9 +20,10 @@ export default function NewReminder() {
         setDragOffset(0);
     };
 
-    const step =  40;
-
+    
     useEffect(() => {
+        const step =  30;
+        
         const handleMove = (e: MouseEvent | TouchEvent) => {
             if (!isDragging) return;
             
@@ -29,7 +33,7 @@ export default function NewReminder() {
             setDragOffset(diff);
             
             // Threshold to prevent jittery changes
-            if (Math.abs(diff) > 10) {
+            if (Math.abs(diff) > step) {
                 if (isDragging === 'hours') {
                     setHours(prev => {
                         let newHours = prev + (diff > 0 ? 1 : -1);
@@ -99,6 +103,7 @@ export default function NewReminder() {
         <div className="bg-primary-1 h-screen p-5">
             <div className="">
                 <form className="flex flex-col gap-4">
+                    {/* date and time picker */}
                     <div>
                         <h1 className="font-bold">Reminder Name</h1>
                         <input 
@@ -157,6 +162,15 @@ export default function NewReminder() {
                             </div>
                             </div>
                         </div>
+                    </div>
+                    
+                    {/* color picker */}
+                    <div className="flex flex-row gap-5">
+                        {COLLOR_PALLETE.map((item, i) => (
+                            <div className={"h-10 w-10 rounded-full hover:border-2 hover:opacity-75 border-white"} style={{ backgroundColor: item.hex}} key={i}>
+
+                            </div>
+                        ))}
                     </div>
                 </form>
                     <button onClick={handleKonfirmasi} className="bg-green-400 text-black cursor-pointer mt-4 p-2 rounded">konfirmasi</button>
