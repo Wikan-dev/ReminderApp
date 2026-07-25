@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import pen from "../../assets/svg/pen-linear.svg"
 import { useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
+import { useReminderStore } from "../../store/reminderStore"
 
 interface ExtendedMainCardProps extends MainCardProps {
     id?: number | string;
@@ -13,6 +14,7 @@ export default function MainCard({ handleFinish, title, desc, datePick, status, 
     const [edit, setEdit] = useState<boolean>(false)
     const navigate = useNavigate()
     const { id: slug } = useParams<{ id: string }>()
+    const deleteReminder = useReminderStore((state) => state.deleteReminder)
 
     const handleEditClick = (e: React.MouseEvent) => {
         e.stopPropagation()
@@ -28,6 +30,13 @@ export default function MainCard({ handleFinish, title, desc, datePick, status, 
                 }
             }
         })
+    }
+
+    const handleDeleteClick = async (e: React.MouseEvent) => {
+        e.stopPropagation()
+        if (id !== undefined && id !== null) {
+            await deleteReminder(id)
+        }
     }
 
     return (
@@ -66,7 +75,7 @@ export default function MainCard({ handleFinish, title, desc, datePick, status, 
                             <div onClick={handleEditClick}>
                                 <h1 className="px-4 py-2 text-2xl hover:bg-gray-200">edit</h1>
                             </div>
-                            <div onClick={handleEditClick}>
+                            <div onClick={handleDeleteClick}>
                                 <h1 className="px-4 py-2 text-2xl text-red-500 font-bold hover:bg-gray-200">delete</h1>
                             </div>
                         </motion.div>

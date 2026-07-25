@@ -35,6 +35,7 @@ interface ReminderState {
         isPermanent?: boolean;
         desc?: string;
     }) => Promise<void>;
+    deleteReminder: (id: number | string) => Promise<void>;
     handleFinishReminder: (id: number | string | undefined, isFinish: boolean) => Promise<void>;
     toggleFinishReminder: (item: Reminder) => Promise<void>
 }
@@ -137,6 +138,25 @@ export const useReminderStore = create<ReminderState>((set, get) => ({
             console.error("❌ UPDATE REMINDER ERROR:", err);
             set({
                 error: err.response?.data?.error || "Gagal memperbarui reminder",
+                isLoading: false
+            });
+        }
+    },
+
+    deleteReminder: async (id) => {
+        if (!id) return;
+        set({ isLoading: true, error: null });
+        try {
+            await axios.delete(`http://localhost:5000/api/reminder/${id}`);
+
+            set({
+                reminders: get().reminders.filter((reminder) => String(reminder.id) !== String(id)),
+                isLoading: false
+            });
+        } catch (err: any) {
+            console.error("❌ DELETE REMINDER ERROR:", err);
+            set({
+                error: err.response?.data?.error || "Gagal menghapus reminder",
                 isLoading: false
             });
         }
