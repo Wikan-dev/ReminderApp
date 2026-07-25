@@ -58,13 +58,17 @@ export default function MainCard({ handleFinish, title, desc, datePick, status, 
                 />
                 <AnimatePresence>
                     {edit && (
-                        <motion.div 
-                            initial={{ opacity: 0, y: -10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -10 }}
-                            onClick={handleEditClick}
-                            className="absolute max-w-20 right-0 top-15 bg-primary-1 border-3 text-center border-primary-2 rounded-xl cursor-pointer hover:bg-gray-200">
-                            <h1 className="px-4 py-2 text-2xl">edit</h1>
+                        <motion.div
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                className="absolute right-0 top-15 bg-primary-1 border-3 text-center border-primary-2 rounded-xl cursor-pointer">
+                            <div onClick={handleEditClick}>
+                                <h1 className="px-4 py-2 text-2xl hover:bg-gray-200">edit</h1>
+                            </div>
+                            <div onClick={handleEditClick}>
+                                <h1 className="px-4 py-2 text-2xl text-red-500 font-bold hover:bg-gray-200">delete</h1>
+                            </div>
                         </motion.div>
                     )}
                 </AnimatePresence>
