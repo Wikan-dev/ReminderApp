@@ -1,11 +1,14 @@
 import { useState, useRef, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { COLLOR_PALLETE } from "../components/contents/color";
 import { useReminderStore } from "../store/reminderStore";
 
 export default function NewReminder() {
     const { id: slug } = useParams<{ id: string }>();
     const navigate = useNavigate();
+    const location = useLocation();
+
+    const editData = location.state?.editData;
 
     const [name, setName] = useState<string>("");
     const [date, setDate] = useState<string>("");
@@ -15,7 +18,36 @@ export default function NewReminder() {
     const [colorPick, setColorPick] = useState<string>(COLLOR_PALLETE[0]?.hex || "#ffffff");
 
     const addReminder = useReminderStore((state) => state.addReminder);
+    const updateReminder = useReminderStore((state) => state.updateReminder);
     const isLoading = useReminderStore((state) => state.isLoading);
+
+    useEffect(() => {
+        if (editData) {
+            setName(editData.title || editData.name || "");
+            if (editData.colorPick) {
+                setColorPick(editData.colorPick);
+            }
+            if (editData.datePick) {
+                const dateObj = new Date(editData.datePick);
+                if (!isNaN(dateObj.getTime())) {
+                    const yyyy = dateObj.getFullYear();
+                    const mm = String(dateObj.getMonth() + 1).padStart(2, '0');
+                    const dd = String(dateObj.getDate()).padStart(2, '0');
+                    setDate(`${yyyy}-${mm}-${dd}`);
+                    setHours(dateObj.getHours() || 12);
+                    setMinutes(dateObj.getMinutes() || 0);
+                } else if (typeof editData.datePick === "string" && editData.datePick.includes("T")) {
+                    const [d, t] = editData.datePick.split("T");
+                    setDate(d);
+                    if (t) {
+                        const [h, m] = t.split(":");
+                        setHours(parseInt(h, 10) || 12);
+                        setMinutes(parseInt(m, 10) || 0);
+                    }
+                }
+            }
+        }
+    }, [editData]);
 
     const [isDragging, setIsDragging] = useState<string | null>(null); // 'hours' | 'minutes' | null
     const lastY = useRef<number>(0);
@@ -93,18 +125,26 @@ export default function NewReminder() {
         const datePickFormatted = `${date}T${formattedHours}:${formattedMinutes}:00`;
 
         try {
-            await addReminder({
-                slug,
-                name,
-                datePick: datePickFormatted,
-                colorPick,
-                isPermanent: false,
-                isFinish: false,
-            });
+            if (editData?.id) {
+                await updateReminder(editData.id, {
+                    name,
+                    datePick: datePickFormatted,
+                    colorPick,
+                });
+            } else {
+                await addReminder({
+                    slug,
+                    name,
+                    datePick: datePickFormatted,
+                    colorPick,
+                    isPermanent: false,
+                    isFinish: false,
+                });
+            }
 
             navigate(`/MainPages/${slug}`);
         } catch (error) {
-            console.error("Gagal menambah reminder:", error);
+            console.error("Gagal menyimpan reminder:", error);
         }
     };
 

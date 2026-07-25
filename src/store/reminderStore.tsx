@@ -28,6 +28,13 @@ interface ReminderState {
         colorPick?: string;
         desc?: string;
     }) => Promise<void>;
+    updateReminder: (id: number | string, reminderData: {
+        name: string;
+        datePick: string;
+        colorPick?: string;
+        isPermanent?: boolean;
+        desc?: string;
+    }) => Promise<void>;
     handleFinishReminder: (id: number | string | undefined, isFinish: boolean) => Promise<void>;
     toggleFinishReminder: (item: Reminder) => Promise<void>
 }
@@ -103,6 +110,27 @@ export const useReminderStore = create<ReminderState>((set, get) => ({
             set({ 
                 error: err.response?.data?.error || "Gagal menambah reminder", 
                 isLoading: false 
+            });
+        }
+    },
+
+    updateReminder: async (id, reminderData) => {
+        set({ isLoading: true, error: null });
+        try {
+            const response = await axios.patch(`http://localhost:5000/api/reminder/${id}`, reminderData);
+            const updated = response.data;
+
+            set({
+                reminders: get().reminders.map((reminder) =>
+                    String(reminder.id) === String(id) ? { ...reminder, ...updated } : reminder
+                ),
+                isLoading: false
+            });
+        } catch (err: any) {
+            console.error("❌ UPDATE REMINDER ERROR:", err);
+            set({
+                error: err.response?.data?.error || "Gagal memperbarui reminder",
+                isLoading: false
             });
         }
     }

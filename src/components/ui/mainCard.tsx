@@ -2,10 +2,34 @@ import type { MainCardProps } from "../../helper/Types"
 import { motion, AnimatePresence } from "framer-motion"
 import pen from "../../assets/svg/pen-linear.svg"
 import { useState } from "react"
+import { useNavigate, useParams } from "react-router-dom"
 
-//todo: selesaikan mainCard style dan fungsi
-export default function MainCard({ handleFinish, title, desc, datePick, status, Permanent }: MainCardProps) {
+interface ExtendedMainCardProps extends MainCardProps {
+    id?: number | string;
+    colorPick?: string;
+}
+
+export default function MainCard({ handleFinish, title, desc, datePick, status, Permanent, id, colorPick }: ExtendedMainCardProps) {
     const [edit, setEdit] = useState<boolean>(false)
+    const navigate = useNavigate()
+    const { id: slug } = useParams<{ id: string }>()
+
+    const handleEditClick = (e: React.MouseEvent) => {
+        e.stopPropagation()
+        navigate(`/NewReminder/${slug}`, {
+            state: {
+                editData: {
+                    id,
+                    title,
+                    desc,
+                    datePick,
+                    colorPick,
+                    Permanent
+                }
+            }
+        })
+    }
+
     return (
         <div onClick={() => handleFinish?.()} className="bg-primary-1 mt-5 py-4 pl-10 pr-6 flex flex-col justify-between w-full rounded-2xl h-66.5 cursor-pointer">
             <div className="flex flex-row justify-between w-full">
@@ -38,7 +62,8 @@ export default function MainCard({ handleFinish, title, desc, datePick, status, 
                             initial={{ opacity: 0, y: -10 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -10 }}
-                            className="absolute max-w-20 right-0 top-15 bg-primary-1 border-3 text-center border-primary-2 rounded-xl ">
+                            onClick={handleEditClick}
+                            className="absolute max-w-20 right-0 top-15 bg-primary-1 border-3 text-center border-primary-2 rounded-xl cursor-pointer hover:bg-gray-200">
                             <h1 className="px-4 py-2 text-2xl">edit</h1>
                         </motion.div>
                     )}
