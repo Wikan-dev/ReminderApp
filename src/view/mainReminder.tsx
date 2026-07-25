@@ -31,7 +31,7 @@ export default function MainReminder() {
     
 
     return (
-        <div>
+        <div className="flex flex-col gap-5">
             {reminders.length ? (
                 <div>
                     {reminders.map((item) => (

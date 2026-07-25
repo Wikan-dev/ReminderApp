@@ -7,7 +7,7 @@ import { useState } from "react"
 export default function MainCard({ handleFinish, title, desc, datePick, status, Permanent }: MainCardProps) {
     const [edit, setEdit] = useState<boolean>(false)
     return (
-        <div onClick={() => handleFinish?.()} className="bg-primary-1 py-4 pl-10 pr-6 flex flex-col justify-between w-full rounded-2xl h-66.5 cursor-pointer">
+        <div onClick={() => handleFinish?.()} className="bg-primary-1 mt-5 py-4 pl-10 pr-6 flex flex-col justify-between w-full rounded-2xl h-66.5 cursor-pointer">
             <div className="flex flex-row justify-between w-full">
                 <div className="text-black-custom font-jost flex flex-col">
                     <h1 className="text-5xl truncate max-w-120  h-15">{title}</h1>
