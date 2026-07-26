@@ -9,14 +9,20 @@ interface ExtendedMainCardProps extends MainCardProps {
     id?: number | string;
     colorPick?: string;
 }
-
+//todo: benerin bug delete
+//todo: buat page lain khusus untuk ngedit biar ga bentrok
+//todo: konfirmasi pop up sebelum delete
+//todo: buatin undo pop up dengan loading setelah delete reminder
 export default function MainCard({ handleFinish, title, desc, datePick, status, Permanent, id, colorPick }: ExtendedMainCardProps) {
     const [edit, setEdit] = useState<boolean>(false)
     const navigate = useNavigate()
     const { id: slug } = useParams<{ id: string }>()
     const deleteReminder = useReminderStore((state) => state.deleteReminder)
 
+    const isEdit = useReminderStore((state) => state.isEdit)
+
     const handleEditClick = (e: React.MouseEvent) => {
+        isEdit()
         e.stopPropagation()
         navigate(`/NewReminder/${slug}`, {
             state: {
@@ -40,7 +46,7 @@ export default function MainCard({ handleFinish, title, desc, datePick, status, 
     }
 
     return (
-        <div onClick={() => handleFinish?.()} className="bg-primary-1 mt-5 py-4 pl-10 pr-6 flex flex-col justify-between w-full rounded-2xl h-66.5 cursor-pointer">
+            <div onClick={() => handleFinish?.()} className="bg-primary-1 mt-5 py-4 pl-10 pr-6 flex flex-col justify-between w-full rounded-2xl min-h-96 h-auto cursor-pointer">
             <div className="flex flex-row justify-between w-full">
                 <div className="text-black-custom font-jost flex flex-col">
                     <h1 className="text-5xl truncate max-w-120  h-15">{title}</h1>

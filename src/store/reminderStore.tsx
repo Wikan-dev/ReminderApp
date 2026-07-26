@@ -16,7 +16,7 @@ export interface Reminder {
 }
 
 interface ReminderState {
-    isEdit: false;
+    setEdit: false;
     reminders: Reminder[];
     isLoading: boolean;
     error: string | null;
