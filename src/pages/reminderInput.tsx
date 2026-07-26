@@ -16,10 +16,12 @@ export default function NewReminder() {
     const [minutes, setMinutes] = useState<number>(0);
     const [dragOffset, setDragOffset] = useState<number>(0);
     const [colorPick, setColorPick] = useState<string>(COLLOR_PALLETE[0]?.hex || "#ffffff");
+    const [edit, isEdit] = useState<boolean>(false);
 
     const addReminder = useReminderStore((state) => state.addReminder);
     const updateReminder = useReminderStore((state) => state.updateReminder);
     const isLoading = useReminderStore((state) => state.isLoading);
+    const { isEdit } = useReminderStore();
 
     useEffect(() => {
         if (editData) {

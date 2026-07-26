@@ -12,9 +12,11 @@ export interface Reminder {
     datePick: string;  // Menggantikan reminder_time
     colorPick?: string;
     desc?: string;
+    isEdit?: boolean;
 }
 
 interface ReminderState {
+    isEdit: false;
     reminders: Reminder[];
     isLoading: boolean;
     error: string | null;
@@ -46,6 +48,7 @@ export const useReminderStore = create<ReminderState>((set, get) => ({
     isLoading: false,
     error: null,
     isFinish: false,
+    isEdit: false,
 
     handleFinishReminder: async (id, isFinish) => {
         if (!id) return;
