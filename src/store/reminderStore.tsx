@@ -150,7 +150,7 @@ export const useReminderStore = create<ReminderState>((set, get) => ({
     },
 
     deleteReminder: async (id) => {
-        if (!id) return;
+        if (id === undefined || id === null) return;
         set({ isLoading: true, error: null });
         try {
             await axios.delete(`http://localhost:5000/api/reminder/${id}`);
@@ -165,6 +165,7 @@ export const useReminderStore = create<ReminderState>((set, get) => ({
                 error: err.response?.data?.error || "Gagal menghapus reminder",
                 isLoading: false
             });
+            throw err;
         }
     }
 }));
