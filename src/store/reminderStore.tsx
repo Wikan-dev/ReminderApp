@@ -16,10 +16,11 @@ export interface Reminder {
 }
 
 interface ReminderState {
-    setEdit: false;
+    isEdit: boolean;
     reminders: Reminder[];
     isLoading: boolean;
     error: string | null;
+    setEdit: (status: boolean) => void;
     fetchReminder: (slug: string) => Promise<void>; // Butuh input slug lewat URL
     addReminder: (reminderData: {
         slug: string;
@@ -49,6 +50,8 @@ export const useReminderStore = create<ReminderState>((set, get) => ({
     error: null,
     isFinish: false,
     isEdit: false,
+
+    setEdit: (status: boolean) => set({ isEdit: status }),
 
     handleFinishReminder: async (id, isFinish) => {
         if (!id) return;

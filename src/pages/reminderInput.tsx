@@ -20,9 +20,11 @@ export default function NewReminder() {
     const addReminder = useReminderStore((state) => state.addReminder);
     const updateReminder = useReminderStore((state) => state.updateReminder);
     const isLoading = useReminderStore((state) => state.isLoading);
+    const setEdit = useReminderStore((state) => state.setEdit);
 
     useEffect(() => {
         if (editData) {
+            setEdit(true);
             setName(editData.title || editData.name || "");
             if (editData.colorPick) {
                 setColorPick(editData.colorPick);
@@ -46,8 +48,14 @@ export default function NewReminder() {
                     }
                 }
             }
+        } else {
+            setEdit(false);
         }
-    }, [editData]);
+
+        return () => {
+            setEdit(false);
+        };
+    }, [editData, setEdit]);
 
     const [isDragging, setIsDragging] = useState<string | null>(null); // 'hours' | 'minutes' | null
     const lastY = useRef<number>(0);
