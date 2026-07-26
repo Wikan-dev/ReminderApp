@@ -21,6 +21,7 @@ export default function MainCard({ handleFinish, title, desc, datePick, status, 
     const setEdit = useReminderStore((state) => state.setEdit)
 
     const handleEditClick = (e: React.MouseEvent) => {
+        console.log(edit)
         setEdit(true)
         e.stopPropagation()
         navigate(`/NewReminder/${slug}`, {
@@ -42,6 +43,7 @@ export default function MainCard({ handleFinish, title, desc, datePick, status, 
         if (id !== undefined && id !== null) {
             await deleteReminder(id)
         }
+
     }
 
     return (

@@ -130,12 +130,12 @@ export const useReminderStore = create<ReminderState>((set, get) => ({
                 reminders: get().reminders.map((reminder) =>
                     String(reminder.id) === String(id)
                         ? {
-                              ...reminder,
-                              ...updated,
-                              name: reminderData.name,
-                              datePick: reminderData.datePick,
-                              colorPick: reminderData.colorPick ?? reminder.colorPick
-                          }
+                            ...reminder,
+                            ...updated,
+                            name: reminderData.name,
+                            datePick: reminderData.datePick,
+                            colorPick: reminderData.colorPick ?? reminder.colorPick
+                        }
                         : reminder
                 ),
                 isLoading: false
