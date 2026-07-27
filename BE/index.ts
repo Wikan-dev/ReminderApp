@@ -3,10 +3,22 @@ import cors from 'cors';
 import { supabase } from '../src/config/supabase';
 import bcrypt from 'bcryptjs';
 import crypto from 'crypto';
+import rateLimit from 'express-rate-limit';
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+//aturan rate limit
+const apiLiimiter = rateLimit({
+  windowMs: 1 * 60 * 1000,
+  max: 60,
+  message: { error: "terlalu banyak req, coba lagi nanti"},
+  standardHeaders: true,
+  legacyHeaders: false,
+})
+
+app.use('/api', apiLiimiter);
 
 // Endpoint Register
 app.post('/api/register', async (req, res) => {
