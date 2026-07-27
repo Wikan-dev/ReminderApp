@@ -1,34 +1,17 @@
-import { useEffect, useState } from "react";
-import type { Reminder } from "../store/reminderStore";
+import { useEffect } from "react";
 import { useAuthStore } from "../store/authStore";
-import axios from "axios";
 import MainCard from "../components/ui/mainCard";
 import { useReminderStore } from "../store/reminderStore";
 //todo: selesaikan fungsi dan style mainReminder
 export default function MainReminder() {
-    const [reminders, setReminders] = useState<Reminder[]>([]);
-    const { toggleFinishReminder } = useReminderStore();
-    const BASE_URL = 'http://localhost:5000/api/reminder';
-
+    const { reminders, fetchReminder, toggleFinishReminder } = useReminderStore();
     const inputSlug = useAuthStore((state) => state.user?.slug);
 
     useEffect(() => {
         if (inputSlug) {
-            handleGetAll();
+            fetchReminder(inputSlug);
         }
-    }, [inputSlug]);
-
-    const handleGetAll = async () => {
-        if (!inputSlug) return;
-        try {
-            const response = await axios.get<Reminder[]>(`${BASE_URL}/${inputSlug}`);
-            setReminders(response.data);
-        } catch (error) {
-            console.error("Error fetching reminders:", error);
-        }
-    };
-
-    
+    }, [inputSlug, fetchReminder]);
 
     return (
         <div className="flex flex-col gap-5">
@@ -37,6 +20,7 @@ export default function MainReminder() {
                     {reminders.map((item) => (
                         <MainCard
                             key={item.id}
+                            id={item.id}
                             title={item.name}
                             desc={item.desc || ''}
                             datePick={item.datePick}

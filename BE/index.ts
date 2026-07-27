@@ -94,16 +94,16 @@ app.post('/api/reminder', async (req, res) => {
 });
 
 //menghapus data reminder
-app.delete('/api/reminder/:slug', async (req, res) => {
-  const { slug } = req.params;
+app.delete('/api/reminder/:id', async (req, res) => {
+  const { id } = req.params;
 
   const { error } = await supabase
     .from('reminder')
     .delete()
-    .eq('user_id', slug);
-    
-    if (error) return res.status(400).json({ error: error.message });
-    return res.status(200).json({ message: "reminder berhasil dihapus" })
+    .eq('id', id);
+
+  if (error) return res.status(400).json({ error: error.message });
+  return res.status(200).json({ message: "reminder berhasil dihapus" });
 })
 
 //mengambil data reminder

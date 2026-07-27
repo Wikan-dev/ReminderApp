@@ -13,7 +13,7 @@ export default function MainPages() {
     return (
         <div 
             onClick={() => setNewReminderOn(false)} 
-            className="bg-primary-2 w-full h-screen p-5 relative overflow-hidden">
+            className="bg-primary-2 w-full min-h-screen p-5 relative overflow-hidden">
             <h1 className="font-jost text-2xl text-center">Rmndr.</h1>
             <MainReminder />
 
